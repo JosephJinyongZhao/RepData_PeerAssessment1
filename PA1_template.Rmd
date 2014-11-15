@@ -21,6 +21,12 @@ file <- "C:\\data\\RepData_PeerAssessment1\\activity.csv"
 dat <- read.table(file, header = TRUE, sep = ",", na.strings = "NA", stringsAsFactors = FALSE)
 dat2 <- tapply(dat$steps, dat$date, sum)
 dat3 <- as.data.frame(dat2)
+
+dat4 <- tapply(dat$steps, dat$interval, mean, na.rm = TRUE)
+dat4 <- as.data.frame(dat4)
+names(dat4) <- c("steps")
+dat4$interval <- as.numeric(rownames(dat4))
+
 dat$date <- as.Date(dat$date)
 ```
 ## What is mean total number of steps taken per day?
@@ -37,7 +43,12 @@ The mean and median total number of steps taken per day are `r mean` and `r medi
 
 ## What is the average daily activity pattern?
 
+```{r}
+qplot(interval, steps, data = dat4, geom = c("line"))
+interval <- dat$interval[which(dat4$steps == max(dat4$steps))]
+```
 
+The `r interval` 5-minute interval contains the maximum number of steps.
 
 ## Imputing missing values
 
