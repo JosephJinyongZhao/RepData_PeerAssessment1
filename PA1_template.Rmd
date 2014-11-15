@@ -10,8 +10,10 @@ output: PA1_template.md
 wd <- "C:\\data\\RepData_PeerAssessment1"
 setwd(wd)
 getwd()
+Sys.setlocale("LC_TIME", "English")
 
 library(ggplot2)
+library(dplyr)
 ```
 
 ## Loading and preprocessing the data
@@ -52,6 +54,33 @@ The `r interval` 5-minute interval contains the maximum number of steps.
 
 ## Imputing missing values
 
+```{r}
+na <- sum(is.na(dat$steps))
+dat$steps[is.na(dat$steps)] <- mean(dat$steps, na.rm = TRUE)
+dat5 <- tapply(dat$steps, dat$date, sum)
+dat5 <- as.data.frame(dat5)
+names(dat5) <- c("steps")
+str(dat5)
+qplot(steps, data = dat5)
 
+meanfill <- mean(dat5$steps)
+medianfill <- median(dat5$steps)
+
+```
+
+There are `r na` NAs in the dataset.
+I replace all of the NAs with the mean of 5 minute interval. 
+The mean and median total number of steps taken perday are `r meanfill` and `r medianfill` seperate, which are the same with the estimated from the first part. The impact of imputing missing data is average out in my strategy where using mean of 5 minute interval to fill in NAs. 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```{r}
+dat$Date <- weekdays(as.Date(dat$date))
+dat$weekend <- as.factor(ifelse(dat$Date == "Saturday" | dat$Date =="Sunday", dat$weekend <- c("weekend"), dat$weekend <- c("weekday")))
+pattern <- tbl_df(dat)
+pattern2 <- group_by(pattern, weekend, interval)
+pattern3 <- summarize(pattern2, steps = mean(steps))
+qplot(interval, steps, data = pattern3, geom = c("line"), facets = weekend ~ .)
+```
+
+We could notice the pattern between weekday and weekend are different. the pattern in weekend is more active than the one in weekdays.
