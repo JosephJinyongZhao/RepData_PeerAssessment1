@@ -1,18 +1,39 @@
+# Reproducible Research: Peer Assessment 1
+
 ---
 title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
+output: PA1_template.md
+  html_document: PA1_template.html
     keep_md: true
----
 
+```{r}
+wd <- "C:\\data\\RepData_PeerAssessment1"
+setwd(wd)
+getwd()
+
+library(ggplot2)
+```
 
 ## Loading and preprocessing the data
 
-
-
+```{r}
+file <- "C:\\data\\RepData_PeerAssessment1\\activity.csv"
+dat <- read.table(file, header = TRUE, sep = ",", na.strings = "NA", stringsAsFactors = FALSE)
+dat2 <- tapply(dat$steps, dat$date, sum)
+dat3 <- as.data.frame(dat2)
+dat$date <- as.Date(dat$date)
+```
 ## What is mean total number of steps taken per day?
 
+```{r}
+names(dat3) <- c("steps")
+mean <- mean(dat3$steps, na.rm = TRUE)
+median <- median(dat3$steps, na.rm = TRUE)
+qplot(dat3$steps, main = "Total Number of Steps Taken Each Day", xlab = "Steps Taken Each Day")
+```
 
+
+The mean and median total number of steps taken per day are `r mean` and `r median` seperately.
 
 ## What is the average daily activity pattern?
 
